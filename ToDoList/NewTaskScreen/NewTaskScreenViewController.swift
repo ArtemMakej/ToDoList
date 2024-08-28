@@ -27,7 +27,16 @@ class NewTaskScreenViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(resource: .colorSet)
+        setupNavigationItem()
+    }
+    
+    private func setupNavigationItem() {
+        let navigationTitleColor = UIColor(resource: .navigation)
+        navigationController?.navigationBar.titleTextAttributes = [
+            .foregroundColor: navigationTitleColor
+        ]
+        navigationController?.navigationBar.tintColor = navigationTitleColor
     }
 }
 

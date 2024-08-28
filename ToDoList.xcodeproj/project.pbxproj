@@ -25,6 +25,7 @@
 		AC6BBDEB2C7F6C720096A74A /* NewTaskScreenAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6BBDEA2C7F6C720096A74A /* NewTaskScreenAssembly.swift */; };
 		AC6BBDED2C7F6CF30096A74A /* CollectionTaskScreenAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6BBDEC2C7F6CF30096A74A /* CollectionTaskScreenAssembly.swift */; };
 		AC8125AE2C7F79AE00BDC5E4 /* RootAssambly.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8125AD2C7F79AE00BDC5E4 /* RootAssambly.swift */; };
+		AC8125B02C7FCBCE00BDC5E4 /* Font.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8125AF2C7FCBCE00BDC5E4 /* Font.swift */; };
 		D058815937614867C7D29C4E /* Pods_ToDoListTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D1E673E451F97EC37C4B45D /* Pods_ToDoListTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -73,6 +74,8 @@
 		AC6BBDEA2C7F6C720096A74A /* NewTaskScreenAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTaskScreenAssembly.swift; sourceTree = "<group>"; };
 		AC6BBDEC2C7F6CF30096A74A /* CollectionTaskScreenAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionTaskScreenAssembly.swift; sourceTree = "<group>"; };
 		AC8125AD2C7F79AE00BDC5E4 /* RootAssambly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootAssambly.swift; sourceTree = "<group>"; };
+		AC8125AF2C7FCBCE00BDC5E4 /* Font.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Font.swift; sourceTree = "<group>"; };
+		AC8125B22C7FCBFD00BDC5E4 /* Avenir Next.ttc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Avenir Next.ttc"; sourceTree = "<group>"; };
 		BD258249EA8C5E8436F44985 /* Pods-ToDoList.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ToDoList.debug.xcconfig"; path = "Target Support Files/Pods-ToDoList/Pods-ToDoList.debug.xcconfig"; sourceTree = "<group>"; };
 		C7E125508A751F2B3C7DDD21 /* Pods-ToDoList-ToDoListUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ToDoList-ToDoListUITests.release.xcconfig"; path = "Target Support Files/Pods-ToDoList-ToDoListUITests/Pods-ToDoList-ToDoListUITests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -132,6 +135,7 @@
 			children = (
 				AC6BBDAD2C7F658A0096A74A /* AppDelegate.swift */,
 				AC6BBDAF2C7F658A0096A74A /* SceneDelegate.swift */,
+				AC8125B12C7FCBE300BDC5E4 /* Font */,
 				AC8125AD2C7F79AE00BDC5E4 /* RootAssambly.swift */,
 				AC6BBDE12C7F6B7C0096A74A /* CollectionTasksScreen */,
 				AC6BBDE02C7F6AED0096A74A /* NewTaskScreen */,
@@ -179,6 +183,15 @@
 				AC6BBDEC2C7F6CF30096A74A /* CollectionTaskScreenAssembly.swift */,
 			);
 			path = CollectionTasksScreen;
+			sourceTree = "<group>";
+		};
+		AC8125B12C7FCBE300BDC5E4 /* Font */ = {
+			isa = PBXGroup;
+			children = (
+				AC8125B22C7FCBFD00BDC5E4 /* Avenir Next.ttc */,
+				AC8125AF2C7FCBCE00BDC5E4 /* Font.swift */,
+			);
+			path = Font;
 			sourceTree = "<group>";
 		};
 		BE7F1F07363442CBA8A4924F /* Pods */ = {
@@ -450,6 +463,7 @@
 				AC6BBDE72C7F6C2E0096A74A /* CollectionTasksScreenViewController.swift in Sources */,
 				AC6BBDB02C7F658A0096A74A /* SceneDelegate.swift in Sources */,
 				AC6BBDE52C7F6BF30096A74A /* Model.swift in Sources */,
+				AC8125B02C7FCBCE00BDC5E4 /* Font.swift in Sources */,
 				AC6BBDB82C7F658A0096A74A /* ToDoList.xcdatamodeld in Sources */,
 				AC8125AE2C7F79AE00BDC5E4 /* RootAssambly.swift in Sources */,
 				AC6BBDE32C7F6BD90096A74A /* NewTaskScreenPresenter.swift in Sources */,

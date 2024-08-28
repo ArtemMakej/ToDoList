@@ -28,21 +28,39 @@ final class CollectionTasksScreenViewController: UICollectionViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+
     override func viewDidLoad() {
-        collectionView.backgroundColor = .white
-        navigationItem.title = "Список задач"
+        collectionView.backgroundColor = UIColor(resource: .colorSet)
+       
+        
         
         collectionView.snp.makeConstraints { maker in
             maker.top.bottom.equalToSuperview()
             maker.right.left.equalToSuperview()
         }
         setupNavigationItem()
+        setupNavigation()
     }
     
+    
     private func setupNavigationItem() {
+        guard let navigationController = navigationController else {
+                return
+            }
+        let navigationTitleColor = UIColor(resource: .navigation)
+       let titleFont = Font.avenir(weight: .bold, size: 35)
+        navigationController.navigationBar.largeTitleTextAttributes = [
+                .foregroundColor: navigationTitleColor,
+                .font: titleFont
+            ]
+        navigationItem.title = "Список задач"
+    }
+    
+    
+    private func setupNavigation() {
         let plusButton = UIBarButtonItem(image: UIImage(systemName: "plus.circle.fill"), style: .plain, target: self, action: #selector(tapPlusBarButtonItem))
         navigationItem.rightBarButtonItem = plusButton
-        plusButton.tintColor = .black
+        plusButton.tintColor = UIColor(resource: .navigation)
     }
     
     @objc private func tapPlusBarButtonItem() {
