@@ -14,8 +14,6 @@ pod 'SnapKit', '~> 5.6.0'
     # Pods for testing
   end
 
-
-
   target 'ToDoListUITests' do
     # Pods for testing
   end
