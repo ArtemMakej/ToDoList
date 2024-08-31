@@ -16,10 +16,12 @@ protocol ITasksView: AnyObject {
     func stopLoader()
 }
 
-final class TasksViewController: UICollectionViewController {
+final class TasksViewController: UIViewController {
     
     typealias DataSource = UICollectionViewDiffableDataSource<ToDoSection, ToDoCellType>
     typealias Snapshot = NSDiffableDataSourceSnapshot<ToDoSection, ToDoCellType>
+    
+    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeCollectionViewLayout())
     
     private let presenter: ITasksPresenter
     private let loaderView = UIActivityIndicatorView(style: .large)
@@ -27,9 +29,7 @@ final class TasksViewController: UICollectionViewController {
     
     init(presenter: ITasksPresenter) {
         self.presenter = presenter
-        let flowLayout = UICollectionViewFlowLayout()
-        flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
-        super.init(collectionViewLayout: flowLayout)
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
@@ -45,8 +45,9 @@ final class TasksViewController: UICollectionViewController {
     }
     
     private func setupViews() {
+        view.addSubview(collectionView)
         view.backgroundColor = UIColor(resource: .colorSet)
-        collectionView.backgroundColor = UIColor(resource: .colorSet)
+        collectionView.backgroundColor = view.backgroundColor
         collectionView.snp.makeConstraints { maker in
             maker.top.equalTo(view.safeAreaLayoutGuide.snp.top).inset(15)
             maker.left.equalToSuperview()
@@ -108,6 +109,45 @@ final class TasksViewController: UICollectionViewController {
         )
         navigationItem.rightBarButtonItem = plusButton
         plusButton.tintColor = UIColor(resource: .navigation)
+    }
+    
+    private func makeCollectionViewLayout() -> UICollectionViewLayout {
+        UICollectionViewCompositionalLayout { [weak self] sectionIndex, environment in
+            
+            let section = NSCollectionLayoutSection.list(using: self!.makeListConfiguration(), layoutEnvironment: environment)
+            section.interGroupSpacing = 15
+            return section
+        }
+    }
+    
+    private func makeListConfiguration() -> UICollectionLayoutListConfiguration {
+        var listConfiguration = UICollectionLayoutListConfiguration(appearance: .plain)
+        listConfiguration.backgroundColor = UIColor(resource: .colorSet)
+        
+        listConfiguration.leadingSwipeActionsConfigurationProvider = { indexPath -> UISwipeActionsConfiguration? in
+            UISwipeActionsConfiguration(actions: [
+                UIContextualAction(
+                    style: .normal,
+                    title: "Edit",
+                    handler: { [weak self] action, view, completion in
+                        self?.presenter.swipedEditTask(indexPath: indexPath)
+                        completion(true)
+                })
+            ])
+        }
+        
+        listConfiguration.trailingSwipeActionsConfigurationProvider = { indexPath -> UISwipeActionsConfiguration? in
+            UISwipeActionsConfiguration(actions: [
+                UIContextualAction(
+                    style: .destructive,
+                    title: "Delete",
+                    handler: { [weak self] action, view, completion in
+                        self?.presenter.swipedDeleteTask(indexPath: indexPath)
+                })
+            ])
+        }
+        
+        return listConfiguration
     }
 }
 

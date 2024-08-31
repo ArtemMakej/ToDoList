@@ -14,7 +14,9 @@ protocol ITaskDetailsView: AnyObject { }
 class TaskDetailsViewController: UIViewController {
     
     private let presenter: TaskDetailsPresenter
+    private let verticalStackView = UIStackView()
     private let taskTextField = UITextField()
+    private let descriptionTextField = UITextField()
     private let completedButton = UIButton()
     
     init(presenter: TaskDetailsPresenter) {
@@ -40,28 +42,36 @@ extension TaskDetailsViewController: ITaskDetailsView {
 
 extension TaskDetailsViewController {
     private func setupViews() {
-        view.addSubview(taskTextField)
+        view.addSubview(verticalStackView)
         view.addSubview(completedButton)
+        verticalStackView.addArrangedSubview(taskTextField)
+        verticalStackView.addArrangedSubview(descriptionTextField)
         
         let placeholderAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: UIColor(resource: .text),
+            .foregroundColor: UIColor(resource: .text).withAlphaComponent(0.5),
             .font: Font.avenir(weight: .medium, size: 25)
         ]
-        let attributedPlaceholder = NSAttributedString(string: "Create a new task", attributes: placeholderAttributes)
-        taskTextField.attributedPlaceholder = attributedPlaceholder
-        taskTextField.textColor = UIColor(resource: .text)
-        taskTextField.font = Font.avenir(weight: .medium, size: 25)
-        taskTextField.clearButtonMode = .whileEditing
-        taskTextField.layer.cornerRadius = 10
-        taskTextField.backgroundColor = UIColor(resource: .colorView)
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: taskTextField.frame.height))
-        taskTextField.leftView = paddingView
-        taskTextField.leftViewMode = .always
-        taskTextField.snp.makeConstraints { maker in
-            //maker.top.equalTo(view.safeAreaLayoutGuide).inset(50)
-            maker.center.equalToSuperview().offset(-75)
-            maker.right.left.equalToSuperview().inset(17)
-            maker.height.equalTo(40)
+    
+        taskTextField.attributedPlaceholder = NSAttributedString(string: "New task", attributes: placeholderAttributes)
+        descriptionTextField.attributedPlaceholder = NSAttributedString(string: "Task description", attributes: placeholderAttributes)
+        
+        for textField in [taskTextField, descriptionTextField] {
+            textField.textColor = UIColor(resource: .text)
+            textField.font = Font.avenir(weight: .medium, size: 25)
+            textField.clearButtonMode = .whileEditing
+            textField.layer.cornerRadius = 10
+            textField.backgroundColor = UIColor(resource: .colorView)
+            let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: taskTextField.frame.height))
+            textField.leftView = paddingView
+            textField.leftViewMode = .always
+        }
+        
+        verticalStackView.axis = .vertical
+        verticalStackView.spacing = 20
+        verticalStackView.snp.makeConstraints { maker in
+            maker.width.equalToSuperview().inset(32)
+            maker.centerX.equalToSuperview()
+            maker.bottom.equalTo(completedButton.snp.top).inset(-40)
         }
         
         completedButton.backgroundColor = UIColor(resource: .colorView)
@@ -71,9 +81,7 @@ extension TaskDetailsViewController {
         completedButton.setTitleColor(UIColor(resource: .text), for: .normal)
         completedButton.addTarget(self, action: #selector(tapButton), for: .touchUpInside)
         completedButton.snp.makeConstraints { maker in
-            maker.top.equalTo(taskTextField.snp.bottom).offset(70)
-            //maker.bottom.equalToSuperview().inset(50)
-            maker.centerX.equalTo(taskTextField)
+            maker.center.equalToSuperview()
             maker.height.equalTo(55)
             maker.width.equalTo(205)
         }
@@ -91,5 +99,11 @@ extension TaskDetailsViewController {
             .foregroundColor: navigationTitleColor
         ]
         navigationController?.navigationBar.tintColor = navigationTitleColor
+        switch presenter.mode {
+        case .edit:
+            navigationItem.title = "Edit Task"
+        case .new:
+            navigationItem.title = "New Task"
+        }
     }
 }

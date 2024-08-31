@@ -18,6 +18,8 @@ protocol ITasksPresenter {
     func didTapAddButton()
     func sectionIds() -> [ToDoSection]
     func cellIds(section: ToDoSection) -> [ToDoCellType]
+    func swipedEditTask(indexPath: IndexPath)
+    func swipedDeleteTask(indexPath: IndexPath)
 }
 
 final class TasksPresenter: ITasksPresenter {
@@ -60,8 +62,20 @@ final class TasksPresenter: ITasksPresenter {
     func didTapAddButton() {
         mainQueue.runOnMain { [weak self] in
             guard let self else { return }
-            router.openTaskDetail(delegate: self)
+            router.openNewTask(delegate: self)
         }
+    }
+    
+    func swipedEditTask(indexPath: IndexPath) {
+        guard let taskModel = interactor.findModel(index: indexPath.item) else { return }
+        mainQueue.runOnMain { [weak self] in
+            guard let self else { return }
+            router.openEditTask(task: taskModel, delegate: self)
+        }
+    }
+    
+    func swipedDeleteTask(indexPath: IndexPath) {
+        interactor.deleteTask(index: indexPath.item)
     }
 }
 
@@ -75,27 +89,35 @@ extension TasksPresenter: TaskDetailsDelegate {
 extension TasksPresenter: ITasksInteractorOutput {
     
     func didFetchTodos(models: [ToDoModel]) {
-        let newViewModels = models.map {
-            ToDoViewModel(
-                id: $0.id,
-                name: $0.todo,
-                description: $0.todo,
-                created: $0.dateOfCreation,
-                completed: $0.completed
-            )
-        }
-        
-        let viewModels = toDoSectionCells.map {
-            switch $0 {
-            case let .main(model): return model
-            }
-        } + newViewModels
-        
-        let sortedModels = viewModels.sorted(by: { $0.id < $1.id && $0.completed || $1.completed })
-        toDoSectionCells = sortedModels.map { ToDoCellType.main($0) }
+        let newViewModels = mapToViewModels(todoModels: models)
+        let cells = newViewModels.map { ToDoCellType.main($0) }
+        toDoSectionCells = cells
         mainQueue.runOnMain { [weak view] in
             view?.stopLoader()
             view?.reloadView()
+        }
+    }
+    
+    func didUpdateTodos(models: [ToDoModel]) {
+        let viewModels = mapToViewModels(todoModels: models)
+        toDoSectionCells = viewModels.map { ToDoCellType.main($0) }
+        mainQueue.runOnMain { [weak view] in
+            view?.reloadView()
+        }
+    }
+    
+    private func mapToViewModels(todoModels: [ToDoModel]) -> [ToDoViewModel] {
+        todoModels.map { model in
+            ToDoViewModel(
+                id: model.id,
+                name: model.todo,
+                description: model.todo,
+                created: model.dateOfCreation,
+                completed: model.completed,
+                onToggle: { [weak self] in
+                    self?.interactor.toggleTodo(at: model.id)
+                }
+            )
         }
     }
 }

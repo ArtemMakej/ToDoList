@@ -8,15 +8,21 @@
 import UIKit
 
 protocol ITasksRouter {
-    func openTaskDetail(delegate: TaskDetailsDelegate)
+    func openNewTask(delegate: TaskDetailsDelegate)
+    func openEditTask(task: ToDoModel, delegate: TaskDetailsDelegate)
 }
 
 final class TasksRouter: ITasksRouter {
     
     weak var controller: UIViewController?
     
-    func openTaskDetail(delegate: TaskDetailsDelegate) {
-        let newTasksScreenViewController = TaskDetailsAssembly().assemble(delegate: delegate)
-        controller?.navigationController?.pushViewController(newTasksScreenViewController, animated: true)
+    func openNewTask(delegate: TaskDetailsDelegate) {
+        let taskDetailViewController = TaskDetailsAssembly().assemble(editingTask: nil, delegate: delegate)
+        controller?.navigationController?.pushViewController(taskDetailViewController, animated: true)
+    }
+    
+    func openEditTask(task: ToDoModel, delegate: TaskDetailsDelegate) {
+        let taskDetailViewController = TaskDetailsAssembly().assemble(editingTask: task, delegate: delegate)
+        controller?.navigationController?.pushViewController(taskDetailViewController, animated: true)
     }
 }

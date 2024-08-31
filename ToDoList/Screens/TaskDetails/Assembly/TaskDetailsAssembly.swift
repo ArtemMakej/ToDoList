@@ -10,13 +10,14 @@ import UIKit
 // MARK: - ITaskDetailsAssembly
 
 protocol ITaskDetailsAssembly {
-    func assemble(delegate: TaskDetailsDelegate) -> UIViewController
+    func assemble(editingTask: ToDoModel?, delegate: TaskDetailsDelegate) -> UIViewController
 }
 
 final class TaskDetailsAssembly: ITaskDetailsAssembly {
-    func assemble(delegate: TaskDetailsDelegate) -> UIViewController {
+    func assemble(editingTask: ToDoModel?, delegate: TaskDetailsDelegate) -> UIViewController {
         let router = TaskDetailsRouter()
         let presenter = TaskDetailsPresenter(
+            editingTask: editingTask,
             interactor: TaskDetailsInteractor(),
             router: router,
             mainQueue: DispatchQueue.main

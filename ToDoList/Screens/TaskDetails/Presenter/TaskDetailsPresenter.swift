@@ -9,11 +9,19 @@ import Foundation
 
 // MARK: - ITaskDetailsPresenter
 
+enum TaskDetailsMode {
+    case new
+    case edit
+}
+
 protocol ITaskDetailsPresenter {
+    var mode: TaskDetailsMode { get }
     func didTapCreateNewTask(name: String?, description: String?)
 }
 
 final class TaskDetailsPresenter: ITaskDetailsPresenter {
+    
+    let mode: TaskDetailsMode
     
     weak var view: TaskDetailsViewController?
     weak var delegate: TaskDetailsDelegate?
@@ -21,8 +29,10 @@ final class TaskDetailsPresenter: ITaskDetailsPresenter {
     private let interactor: ITaskDetailsInteractor
     private let router: ITaskDetailsRouter
     private let mainQueue: IMainQueue
+    private var editingTask: ToDoModel?
     
     init(
+        editingTask: ToDoModel?,
         interactor: ITaskDetailsInteractor,
         router: ITaskDetailsRouter,
         mainQueue: IMainQueue
@@ -30,6 +40,8 @@ final class TaskDetailsPresenter: ITaskDetailsPresenter {
         self.interactor = interactor
         self.router = router
         self.mainQueue = mainQueue
+        self.mode = editingTask == nil ? .new : .edit
+        self.editingTask = editingTask
     }
     
     func didTapCreateNewTask(name: String?, description: String?) {

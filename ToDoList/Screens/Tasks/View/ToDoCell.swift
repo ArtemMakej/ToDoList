@@ -14,13 +14,16 @@ protocol IConfigurable {
 
 final class ToDoCell: UICollectionViewCell, IConfigurable {
     
+    private let containerView = UIView()
     private let idLabel = UILabel()
     private let nameLabel = UILabel()
     private let completedSwitch = UISwitch()
     
+    private var viewModel: ToDoViewModel?
+    
     override func layoutSubviews() {
         super.layoutSubviews()
-        contentView.layer.cornerRadius = frame.height / 2.5
+        containerView.layer.cornerRadius = 30
     }
     
     override init(frame: CGRect) {
@@ -33,13 +36,18 @@ final class ToDoCell: UICollectionViewCell, IConfigurable {
     }
     
     private func setupViews() {
-        contentView.backgroundColor = UIColor(resource: .colorView)
+        contentView.addSubview(containerView)
         contentView.clipsToBounds = true
-        contentView.addSubview(nameLabel)
-        contentView.addSubview(completedSwitch)
+        containerView.backgroundColor = UIColor(resource: .colorView)
+        containerView.addSubview(nameLabel)
+        containerView.addSubview(completedSwitch)
         contentView.snp.makeConstraints { maker in
-            maker.left.right.equalToSuperview()
-            maker.bottom.top.equalToSuperview()
+            maker.edges.equalToSuperview()
+        }
+        
+        containerView.snp.makeConstraints { maker in
+            maker.top.bottom.equalToSuperview()
+            maker.left.right.equalToSuperview().inset(16)
         }
         
         nameLabel.textColor =  UIColor(resource: .colorSet)
@@ -47,13 +55,14 @@ final class ToDoCell: UICollectionViewCell, IConfigurable {
         nameLabel.numberOfLines = .zero
         nameLabel.textAlignment = .center
         nameLabel.snp.makeConstraints { maker in
-            maker.top.equalTo(contentView.snp.top).offset(20)
+            maker.top.equalTo(containerView.snp.top).offset(20)
             maker.right.left.equalToSuperview().inset(16)
         }
         
         completedSwitch.backgroundColor = UIColor(resource: .colorSet)
         completedSwitch.layer.cornerRadius = 15
         completedSwitch.onTintColor = UIColor(resource: .switch)
+        completedSwitch.addTarget(self, action: #selector(didTapSwitch), for: .touchUpInside)
         completedSwitch.snp.makeConstraints { maker in
             maker.top.equalTo(nameLabel.snp.bottom).offset(10)
             maker.centerX.equalTo(nameLabel)
@@ -62,9 +71,14 @@ final class ToDoCell: UICollectionViewCell, IConfigurable {
     }
     
     func configure(item: ToDoViewModel) {
+        viewModel = item
         nameLabel.text = item.name
         completedSwitch.isOn = item.completed
         let color = UIColor(resource: .colorView)
-        contentView.backgroundColor = item.completed ? color.withAlphaComponent(0.5) : color
+        containerView.backgroundColor = item.completed ? color.withAlphaComponent(0.5) : color
+    }
+    
+    @objc private func didTapSwitch() {
+        viewModel?.onToggle()
     }
 }
