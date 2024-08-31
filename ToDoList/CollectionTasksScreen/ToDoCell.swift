@@ -20,9 +20,9 @@ final class ToDoCell: UICollectionViewCell, IConfigurable {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        contentView.layer.cornerRadius = frame.height / 2
+        contentView.layer.cornerRadius = frame.height / 2.5
     }
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -37,14 +37,13 @@ final class ToDoCell: UICollectionViewCell, IConfigurable {
         contentView.clipsToBounds = true
         contentView.addSubview(nameLabel)
         contentView.addSubview(completedSwitch)
-        
         contentView.snp.makeConstraints { maker in
             maker.left.right.equalToSuperview()
             maker.bottom.top.equalToSuperview()
         }
-
+        
         nameLabel.textColor =  UIColor(resource: .colorSet)
-        nameLabel.font = Font.avenir(weight: .medium, size: 25)
+        nameLabel.font = Font.avenir(weight: .medium, size: 19)
         nameLabel.numberOfLines = .zero
         nameLabel.textAlignment = .center
         nameLabel.snp.makeConstraints { maker in
@@ -64,7 +63,7 @@ final class ToDoCell: UICollectionViewCell, IConfigurable {
     }
     
     func configure(item: ToDoModel) {
-        nameLabel.text = String(item.name)
+        nameLabel.text = String(item.todo)
         completedSwitch.isOn = item.completed
     }
 }

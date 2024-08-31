@@ -12,13 +12,13 @@ import SnapKit
 
 protocol ICollectionTasksScreenViewController: AnyObject {
     func reloadView()
+    func openNewTaskScreen(delegate: NewTaskDelegate)
 }
 
 final class CollectionTasksScreenViewController: UICollectionViewController {
     
     typealias DataSource = UICollectionViewDiffableDataSource<ToDoSection, ToDoCellType>
     typealias Snapshot = NSDiffableDataSourceSnapshot<ToDoSection, ToDoCellType>
-    
     
     private let presenter: ICollectionTasksScreenPresenter
     private var dataSource: DataSource?
@@ -38,11 +38,12 @@ final class CollectionTasksScreenViewController: UICollectionViewController {
         view.backgroundColor = UIColor(resource: .colorSet)
         collectionView.backgroundColor = UIColor(resource: .colorSet)
         collectionView.snp.makeConstraints { maker in
-            maker.top.equalTo(view.safeAreaLayoutGuide.snp.top).inset(10)
+            maker.top.equalTo(view.safeAreaLayoutGuide.snp.top).inset(15)
             maker.left.equalToSuperview()
             maker.right.equalToSuperview()
             maker.bottom.equalTo(view.snp.bottom)
         }
+        
         setupNavigationItem()
         setupNavigation()
         setupDataSource()
@@ -56,8 +57,7 @@ final class CollectionTasksScreenViewController: UICollectionViewController {
             cell.contentView.snp.makeConstraints { maker in
                 maker.width.equalTo(self.collectionView.frame.width - (16 * 2))
             }
-            cell.configure(item: itemIdentifier)
-        }
+            cell.configure(item: itemIdentifier) }
         let dataSource = DataSource(collectionView: collectionView)
         { collectionView, indexPath, itemIdentifier in
             switch indexPath.section {
@@ -75,8 +75,7 @@ final class CollectionTasksScreenViewController: UICollectionViewController {
     }
     
     @objc private func tapPlusBarButtonItem() {
-        let  newTasksScreenViewController = NewTaskScreenAssembly().assemble()
-        navigationController?.pushViewController(newTasksScreenViewController, animated: true)
+        presenter.didTapAddButton()
     }
 }
 
@@ -84,6 +83,11 @@ extension CollectionTasksScreenViewController: ICollectionTasksScreenViewControl
     
     func reloadView() {
         dataSource?.apply(makeSnapshot())
+    }
+    
+    func openNewTaskScreen(delegate: NewTaskDelegate) {
+        let  newTasksScreenViewController = NewTaskScreenAssembly().assemble(delegate: delegate)
+        navigationController?.pushViewController(newTasksScreenViewController, animated: true)
     }
     
     private func makeSnapshot() -> Snapshot {

@@ -13,16 +13,9 @@ protocol NewTaskDelegate: AnyObject {
     func didCreateNewTask(model: ToDoModel)
 }
 
-enum ToDoSection: Int {
-    case main
-}
-
-enum ToDoCellType: Hashable {
-    case main(ToDoModel)
-}
-
 protocol ICollectionTasksScreenPresenter {
     func viewDidLoad()
+    func didTapAddButton()
     func sectionIds() -> [ToDoSection]
     func cellIds(section: ToDoSection) -> [ToDoCellType]
 }
@@ -30,24 +23,19 @@ protocol ICollectionTasksScreenPresenter {
 final class CollectionTasksScreenPresenter: ICollectionTasksScreenPresenter {
     
     weak var view: ICollectionTasksScreenViewController?
-    private  var sections: [ToDoSection] = []
+    private var sections: [ToDoSection] = [.main]
     private var toDoSectionCells: [ToDoCellType] = []
     
-    init() {
-        sections = [.main]
-        var id = 1
-        let names = ["Create a design for the app"]
-        let model = ToDoModel(id: id, name: names.randomElement()!, completed: false, userId: 324)
-        toDoSectionCells.append(.main(model))
-        id = id + 1
-    }
-    
     func viewDidLoad() {
-        view?.reloadView()
+        loadingToDosModel()
     }
     
     func sectionIds() -> [ToDoSection] {
         sections
+    }
+    
+    func didTapAddButton() {
+        view?.openNewTaskScreen(delegate: self)
     }
     
     func cellIds(section: ToDoSection) -> [ToDoCellType] {
@@ -55,6 +43,27 @@ final class CollectionTasksScreenPresenter: ICollectionTasksScreenPresenter {
         case .main:
             return toDoSectionCells
         }
+    }
+    
+    private func loadingToDosModel() {
+        let urlRequest = "https://dummyjson.com/todos"
+        guard let url = URL(string: urlRequest) else { return }
+        URLSession.shared.dataTask(with: url) { (data, responce, error) in
+            guard let data = data
+            else { return }
+            do {
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                let result = try decoder.decode(ToDosWrapper.self, from: data)
+                let mappedResult = result.todos.map { ToDoCellType.main($0) }
+                self.toDoSectionCells.append(contentsOf: mappedResult)
+                DispatchQueue.main.async {
+                    self.view?.reloadView()
+                }
+            } catch let error {
+                print("Error", error)
+            }
+        }.resume()
     }
 }
 

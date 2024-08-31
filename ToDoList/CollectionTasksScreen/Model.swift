@@ -5,11 +5,23 @@
 //  Created by Artem Mackei on 28.08.2024.
 //
 
-import Foundation
+import UIKit
 
-struct ToDoModel: Hashable {
+enum ToDoSection: Int {
+    case main
+}
+
+enum ToDoCellType: Hashable {
+    case main(ToDoModel)
+}
+
+struct ToDoModel: Hashable, Decodable {
     var id: Int
-    var name: String
+    var todo: String
     var completed: Bool
     var userId: Int
+}
+
+struct ToDosWrapper: Decodable {
+    let todos: [ToDoModel]
 }

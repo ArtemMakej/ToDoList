@@ -12,7 +12,6 @@
 		AC6BBDAE2C7F658A0096A74A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6BBDAD2C7F658A0096A74A /* AppDelegate.swift */; };
 		AC6BBDB02C7F658A0096A74A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6BBDAF2C7F658A0096A74A /* SceneDelegate.swift */; };
 		AC6BBDB22C7F658A0096A74A /* NewTaskScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6BBDB12C7F658A0096A74A /* NewTaskScreenViewController.swift */; };
-		AC6BBDB82C7F658A0096A74A /* ToDoList.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = AC6BBDB62C7F658A0096A74A /* ToDoList.xcdatamodeld */; };
 		AC6BBDBA2C7F658C0096A74A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC6BBDB92C7F658C0096A74A /* Assets.xcassets */; };
 		AC6BBDBD2C7F658C0096A74A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC6BBDBB2C7F658C0096A74A /* LaunchScreen.storyboard */; };
 		AC6BBDC82C7F658C0096A74A /* ToDoListTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6BBDC72C7F658C0096A74A /* ToDoListTests.swift */; };
@@ -59,7 +58,6 @@
 		AC6BBDAD2C7F658A0096A74A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AC6BBDAF2C7F658A0096A74A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		AC6BBDB12C7F658A0096A74A /* NewTaskScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTaskScreenViewController.swift; sourceTree = "<group>"; };
-		AC6BBDB72C7F658A0096A74A /* ToDoList.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ToDoList.xcdatamodel; sourceTree = "<group>"; };
 		AC6BBDB92C7F658C0096A74A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AC6BBDBC2C7F658C0096A74A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AC6BBDBE2C7F658C0096A74A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -144,7 +142,6 @@
 				AC6BBDB92C7F658C0096A74A /* Assets.xcassets */,
 				AC6BBDBB2C7F658C0096A74A /* LaunchScreen.storyboard */,
 				AC6BBDBE2C7F658C0096A74A /* Info.plist */,
-				AC6BBDB62C7F658A0096A74A /* ToDoList.xcdatamodeld */,
 			);
 			path = ToDoList;
 			sourceTree = "<group>";
@@ -468,7 +465,6 @@
 				AC6BBDB02C7F658A0096A74A /* SceneDelegate.swift in Sources */,
 				AC6BBDE52C7F6BF30096A74A /* Model.swift in Sources */,
 				AC8125B02C7FCBCE00BDC5E4 /* Font.swift in Sources */,
-				AC6BBDB82C7F658A0096A74A /* ToDoList.xcdatamodeld in Sources */,
 				AC8125AE2C7F79AE00BDC5E4 /* RootAssambly.swift in Sources */,
 				AC6BBDE32C7F6BD90096A74A /* NewTaskScreenPresenter.swift in Sources */,
 			);
@@ -815,19 +811,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		AC6BBDB62C7F658A0096A74A /* ToDoList.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				AC6BBDB72C7F658A0096A74A /* ToDoList.xcdatamodel */,
-			);
-			currentVersion = AC6BBDB72C7F658A0096A74A /* ToDoList.xcdatamodel */;
-			path = ToDoList.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = AC6BBDA22C7F658A0096A74A /* Project object */;
 }

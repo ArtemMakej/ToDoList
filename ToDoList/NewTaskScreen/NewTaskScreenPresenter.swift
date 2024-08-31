@@ -20,11 +20,12 @@ final class NewTaskScreenPresenter: INewTaskScreenPresenter {
     func didTapCreateNewTask(text: String?) {
         guard let text, !text.isEmpty else { return }
         let model = ToDoModel(
-            id: Int.random(in: 1000...10000),
-            name: text,
+            id: Int.random(in: 1...10),
+            todo: text,
             completed: false,
-            userId: 12323
+            userId: 123
         )
         delegate?.didCreateNewTask(model: model)
+        view?.close()
     }
 }

@@ -10,14 +10,15 @@ import UIKit
 // MARK: - INewTaskScreenAssembly
 
 protocol INewTaskScreenAssembly {
-    func assemble() -> UIViewController
+    func assemble(delegate: NewTaskDelegate) -> UIViewController
 }
 
 final class NewTaskScreenAssembly: INewTaskScreenAssembly {
-    func assemble() -> UIViewController {
+    func assemble(delegate: NewTaskDelegate) -> UIViewController {
         let presenter = NewTaskScreenPresenter()
         let vc = NewTaskScreenViewController(presenter: presenter)
         presenter.view = vc
+        presenter.delegate = delegate
         return vc
     }
 }

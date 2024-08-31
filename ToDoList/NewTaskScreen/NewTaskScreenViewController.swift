@@ -9,7 +9,8 @@ import UIKit
 
 // MARK: - INewTaskScreenViewController
 
-protocol INewTaskScreenViewController: AnyObject {
+protocol INewTaskScreenView: AnyObject {
+    func close()
 }
 
 class NewTaskScreenViewController: UIViewController {
@@ -35,8 +36,11 @@ class NewTaskScreenViewController: UIViewController {
     }
 }
 
-
-extension NewTaskScreenViewController: INewTaskScreenViewController {
+extension NewTaskScreenViewController: INewTaskScreenView {
+    
+    func close() {
+        navigationController?.popViewController(animated: true)
+    }
 }
 
 extension NewTaskScreenViewController {
@@ -81,7 +85,7 @@ extension NewTaskScreenViewController {
     }
     
     @objc func tapButton() {
-       //
+        presenter.didTapCreateNewTask(text: taskTextField.text)
     }
 }
 
@@ -94,6 +98,3 @@ extension NewTaskScreenViewController {
         navigationController?.navigationBar.tintColor = navigationTitleColor
     }
 }
-
-
-
