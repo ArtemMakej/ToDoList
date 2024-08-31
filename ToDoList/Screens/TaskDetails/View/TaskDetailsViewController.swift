@@ -1,5 +1,5 @@
 //
-//  NewTaskScreenViewController.swift
+//  TaskDetailsViewController.swift
 //  ToDoList
 //
 //  Created by Artem Mackei on 28.08.2024.
@@ -7,19 +7,17 @@
 
 import UIKit
 
-// MARK: - INewTaskScreenViewController
+// MARK: - ITaskDetailsViewController
 
-protocol INewTaskScreenView: AnyObject {
-    func close()
-}
+protocol ITaskDetailsView: AnyObject { }
 
-class NewTaskScreenViewController: UIViewController {
+class TaskDetailsViewController: UIViewController {
     
-    private let presenter: NewTaskScreenPresenter
+    private let presenter: TaskDetailsPresenter
     private let taskTextField = UITextField()
     private let completedButton = UIButton()
     
-    init(presenter: NewTaskScreenPresenter) {
+    init(presenter: TaskDetailsPresenter) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
@@ -36,14 +34,11 @@ class NewTaskScreenViewController: UIViewController {
     }
 }
 
-extension NewTaskScreenViewController: INewTaskScreenView {
-    
-    func close() {
-        navigationController?.popViewController(animated: true)
-    }
+extension TaskDetailsViewController: ITaskDetailsView {
+
 }
 
-extension NewTaskScreenViewController {
+extension TaskDetailsViewController {
     private func setupViews() {
         view.addSubview(taskTextField)
         view.addSubview(completedButton)
@@ -85,11 +80,11 @@ extension NewTaskScreenViewController {
     }
     
     @objc func tapButton() {
-        presenter.didTapCreateNewTask(text: taskTextField.text)
+        presenter.didTapCreateNewTask(name: taskTextField.text, description: nil)
     }
 }
 
-extension NewTaskScreenViewController {
+extension TaskDetailsViewController {
     private func setupNavigationItem() {
         let navigationTitleColor = UIColor(resource: .navigation)
         navigationController?.navigationBar.titleTextAttributes = [

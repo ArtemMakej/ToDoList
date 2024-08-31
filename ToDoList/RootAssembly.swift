@@ -13,10 +13,10 @@ protocol IRootAssembly {
     func assemble() -> UIViewController
 }
 
-final class RootAssambly:  IRootAssembly {
+final class RootAssembly:  IRootAssembly {
     func assemble() -> UIViewController {
         let navigationController = UINavigationController(
-            rootViewController: CollectionTaskScreenAssembly().assemble()
+            rootViewController: TasksAssembly().assemble()
         )
         navigationController.navigationBar.prefersLargeTitles = true
         return navigationController

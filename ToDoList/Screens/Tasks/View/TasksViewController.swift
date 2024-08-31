@@ -1,5 +1,5 @@
 //
-//  CollectionTasksScreenViewController.swift
+//  TasksViewController.swift
 //  ToDoList
 //
 //  Created by Artem Mackei on 28.08.2024.
@@ -8,22 +8,24 @@
 import UIKit
 import SnapKit
 
-// MARK: - ICollectionTasksScreenViewController
+// MARK: - ITasksViewController
 
-protocol ICollectionTasksScreenViewController: AnyObject {
+protocol ITasksView: AnyObject {
     func reloadView()
-    func openNewTaskScreen(delegate: NewTaskDelegate)
+    func startLoader()
+    func stopLoader()
 }
 
-final class CollectionTasksScreenViewController: UICollectionViewController {
+final class TasksViewController: UICollectionViewController {
     
     typealias DataSource = UICollectionViewDiffableDataSource<ToDoSection, ToDoCellType>
     typealias Snapshot = NSDiffableDataSourceSnapshot<ToDoSection, ToDoCellType>
     
-    private let presenter: ICollectionTasksScreenPresenter
+    private let presenter: ITasksPresenter
+    private let loaderView = UIActivityIndicatorView(style: .large)
     private var dataSource: DataSource?
     
-    init(presenter: ICollectionTasksScreenPresenter) {
+    init(presenter: ITasksPresenter) {
         self.presenter = presenter
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
@@ -35,6 +37,14 @@ final class CollectionTasksScreenViewController: UICollectionViewController {
     }
     
     override func viewDidLoad() {
+        setupViews()
+        setupNavigationItem()
+        setupNavigation()
+        setupDataSource()
+        presenter.viewDidLoad()
+    }
+    
+    private func setupViews() {
         view.backgroundColor = UIColor(resource: .colorSet)
         collectionView.backgroundColor = UIColor(resource: .colorSet)
         collectionView.snp.makeConstraints { maker in
@@ -44,14 +54,14 @@ final class CollectionTasksScreenViewController: UICollectionViewController {
             maker.bottom.equalTo(view.snp.bottom)
         }
         
-        setupNavigationItem()
-        setupNavigation()
-        setupDataSource()
-        presenter.viewDidLoad()
+        view.addSubview(loaderView)
+        loaderView.snp.makeConstraints { maker in
+            maker.center.equalTo(collectionView)
+        }
     }
     
     private func setupDataSource() {
-        let toDoCellRegistrator = UICollectionView.CellRegistration<ToDoCell, ToDoModel>
+        let toDoCellRegistrator = UICollectionView.CellRegistration<ToDoCell, ToDoViewModel>
         { [weak self] cell, IndexPath, itemIdentifier in
             guard let self else { return }
             cell.contentView.snp.makeConstraints { maker in
@@ -77,17 +87,44 @@ final class CollectionTasksScreenViewController: UICollectionViewController {
     @objc private func tapPlusBarButtonItem() {
         presenter.didTapAddButton()
     }
+    
+    private func setupNavigationItem() {
+        guard let navigationController = navigationController else { return }
+        let navigationTitleColor = UIColor(resource: .navigation)
+        let titleFont = Font.avenir(weight: .bold, size: 35)
+        navigationItem.title = "Todo List"
+        navigationController.navigationBar.largeTitleTextAttributes = [
+            .foregroundColor: navigationTitleColor,
+            .font: titleFont
+        ]
+    }
+    
+    private func setupNavigation() {
+        let plusButton = UIBarButtonItem(
+            image: UIImage(systemName: "plus.circle.fill"),
+            style: .plain,
+            target: self,
+            action: #selector(tapPlusBarButtonItem)
+        )
+        navigationItem.rightBarButtonItem = plusButton
+        plusButton.tintColor = UIColor(resource: .navigation)
+    }
 }
 
-extension CollectionTasksScreenViewController: ICollectionTasksScreenViewController {
+// MARK: - ITasksView
+
+extension TasksViewController: ITasksView {
     
     func reloadView() {
         dataSource?.apply(makeSnapshot())
     }
     
-    func openNewTaskScreen(delegate: NewTaskDelegate) {
-        let  newTasksScreenViewController = NewTaskScreenAssembly().assemble(delegate: delegate)
-        navigationController?.pushViewController(newTasksScreenViewController, animated: true)
+    func startLoader() {
+        loaderView.startAnimating()
+    }
+    
+    func stopLoader() {
+        loaderView.stopAnimating()
     }
     
     private func makeSnapshot() -> Snapshot {
@@ -99,26 +136,5 @@ extension CollectionTasksScreenViewController: ICollectionTasksScreenViewControl
             snaphot.appendItems(cells, toSection: section)
         }
         return snaphot
-    }
-}
-
-extension CollectionTasksScreenViewController {
-    func setupNavigationItem() {
-        guard let navigationController = navigationController else {
-            return
-        }
-        let navigationTitleColor = UIColor(resource: .navigation)
-        let titleFont = Font.avenir(weight: .bold, size: 35)
-        navigationController.navigationBar.largeTitleTextAttributes = [
-            .foregroundColor: navigationTitleColor,
-            .font: titleFont
-        ]
-        navigationItem.title = "Список задач"
-    }
-    
-    func setupNavigation() {
-        let plusButton = UIBarButtonItem(image: UIImage(systemName: "plus.circle.fill"), style: .plain, target: self, action: #selector(tapPlusBarButtonItem))
-        navigationItem.rightBarButtonItem = plusButton
-        plusButton.tintColor = UIColor(resource: .navigation)
     }
 }

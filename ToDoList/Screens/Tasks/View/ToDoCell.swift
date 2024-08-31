@@ -54,7 +54,6 @@ final class ToDoCell: UICollectionViewCell, IConfigurable {
         completedSwitch.backgroundColor = UIColor(resource: .colorSet)
         completedSwitch.layer.cornerRadius = 15
         completedSwitch.onTintColor = UIColor(resource: .switch)
-        completedSwitch.isUserInteractionEnabled = true
         completedSwitch.snp.makeConstraints { maker in
             maker.top.equalTo(nameLabel.snp.bottom).offset(10)
             maker.centerX.equalTo(nameLabel)
@@ -62,8 +61,10 @@ final class ToDoCell: UICollectionViewCell, IConfigurable {
         }
     }
     
-    func configure(item: ToDoModel) {
-        nameLabel.text = String(item.todo)
+    func configure(item: ToDoViewModel) {
+        nameLabel.text = item.name
         completedSwitch.isOn = item.completed
+        let color = UIColor(resource: .colorView)
+        contentView.backgroundColor = item.completed ? color.withAlphaComponent(0.5) : color
     }
 }
