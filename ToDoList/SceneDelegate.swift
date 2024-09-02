@@ -18,4 +18,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController  = RootAssembly().assemble()
         window?.makeKeyAndVisible()
     }
+    
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        print("DID ENTER BACKGROUND")
+    }
 }

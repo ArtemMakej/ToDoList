@@ -17,13 +17,14 @@ enum TaskDetailsMode {
 protocol ITaskDetailsPresenter {
     var mode: TaskDetailsMode { get }
     func didTapCreateNewTask(name: String?, description: String?)
+    func viewDidLoad()
 }
 
 final class TaskDetailsPresenter: ITaskDetailsPresenter {
     
     let mode: TaskDetailsMode
     
-    weak var view: TaskDetailsViewController?
+    weak var view: ITaskDetailsView?
     weak var delegate: TaskDetailsDelegate?
     
     private let interactor: ITaskDetailsInteractor
@@ -44,9 +45,27 @@ final class TaskDetailsPresenter: ITaskDetailsPresenter {
         self.editingTask = editingTask
     }
     
+    func viewDidLoad() {
+        guard let editingTask else { return }
+        mainQueue.runOnMain { [weak self] in
+            self?.view?.fillTextFields(
+                taskName: editingTask.todo,
+                taskDescription: editingTask.description
+            )
+        }
+    }
+    
     func didTapCreateNewTask(name: String?, description: String?) {
         guard let name, !name.isEmpty else { return }
-        delegate?.didCreateNewTask(name: name, description: description)
+        switch mode {
+        case .edit:
+            guard var editingTask else { return }
+            editingTask.todo = name
+            editingTask.description = description
+            delegate?.didUpdateTask(model: editingTask)
+        case .new: 
+            delegate?.didCreateNewTask(name: name, description: description)
+        }
         mainQueue.runOnMain { [weak self] in
             self?.router.close()
         }

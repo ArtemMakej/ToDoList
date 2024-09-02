@@ -11,6 +11,7 @@ import Foundation
 
 protocol TaskDetailsDelegate: AnyObject {
     func didCreateNewTask(name: String, description: String?)
+    func didUpdateTask(model: ToDoModel)
 }
 
 protocol ITasksPresenter {
@@ -84,14 +85,17 @@ extension TasksPresenter: TaskDetailsDelegate {
     func didCreateNewTask(name: String, description: String?) {
         interactor.handleNewTask(name: name, description: description)
     }
+    
+    func didUpdateTask(model: ToDoModel) {
+        interactor.handleUpdatedTask(model: model)
+    }
 }
 
 extension TasksPresenter: ITasksInteractorOutput {
     
     func didFetchTodos(models: [ToDoModel]) {
         let newViewModels = mapToViewModels(todoModels: models)
-        let cells = newViewModels.map { ToDoCellType.main($0) }
-        toDoSectionCells = cells
+        toDoSectionCells = newViewModels.map { ToDoCellType.main($0) }
         mainQueue.runOnMain { [weak view] in
             view?.stopLoader()
             view?.reloadView()
@@ -99,11 +103,7 @@ extension TasksPresenter: ITasksInteractorOutput {
     }
     
     func didUpdateTodos(models: [ToDoModel]) {
-        let viewModels = mapToViewModels(todoModels: models)
-        toDoSectionCells = viewModels.map { ToDoCellType.main($0) }
-        mainQueue.runOnMain { [weak view] in
-            view?.reloadView()
-        }
+        didFetchTodos(models: models)
     }
     
     private func mapToViewModels(todoModels: [ToDoModel]) -> [ToDoViewModel] {
@@ -111,7 +111,7 @@ extension TasksPresenter: ITasksInteractorOutput {
             ToDoViewModel(
                 id: model.id,
                 name: model.todo,
-                description: model.todo,
+                description: model.description,
                 created: model.dateOfCreation,
                 completed: model.completed,
                 onToggle: { [weak self] in

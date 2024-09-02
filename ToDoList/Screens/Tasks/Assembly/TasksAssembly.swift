@@ -24,7 +24,9 @@ final class TasksAssembly: ITasksAssembly {
             remoteTodosService: remoteTodosService,
             userDefaults: UserDefaults.standard,
             tasksStorageService: tasksStorageService,
-            dateFormatter: .shortRuFormmater
+            dateFormatter: .shortRuFormmater,
+            willTerminateNotificationName: UIApplication.willTerminateNotification,
+            willEnterBackgroundNotificationName: UIApplication.didEnterBackgroundNotification
         )
         
         let presenter = TasksPresenter(

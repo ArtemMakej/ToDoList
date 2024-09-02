@@ -9,11 +9,13 @@ import UIKit
 
 // MARK: - ITaskDetailsViewController
 
-protocol ITaskDetailsView: AnyObject { }
+protocol ITaskDetailsView: AnyObject {
+    func fillTextFields(taskName: String?, taskDescription: String?)
+}
 
-class TaskDetailsViewController: UIViewController {
+final class TaskDetailsViewController: UIViewController {
     
-    private let presenter: TaskDetailsPresenter
+    private let presenter: ITaskDetailsPresenter
     private let verticalStackView = UIStackView()
     private let taskTextField = UITextField()
     private let descriptionTextField = UITextField()
@@ -33,11 +35,16 @@ class TaskDetailsViewController: UIViewController {
         view.backgroundColor = UIColor(resource: .colorSet)
         setupNavigationItem()
         setupViews()
+        presenter.viewDidLoad()
     }
 }
 
 extension TaskDetailsViewController: ITaskDetailsView {
 
+    func fillTextFields(taskName: String?, taskDescription: String?) {
+        taskTextField.text = taskName
+        descriptionTextField.text = taskDescription
+    }
 }
 
 extension TaskDetailsViewController {
@@ -87,17 +94,13 @@ extension TaskDetailsViewController {
         }
     }
     
-    @objc func tapButton() {
-        presenter.didTapCreateNewTask(name: taskTextField.text, description: nil)
+    @objc private func tapButton() {
+        presenter.didTapCreateNewTask(name: taskTextField.text, description: descriptionTextField.text)
     }
-}
-
-extension TaskDetailsViewController {
+    
     private func setupNavigationItem() {
         let navigationTitleColor = UIColor(resource: .navigation)
-        navigationController?.navigationBar.titleTextAttributes = [
-            .foregroundColor: navigationTitleColor
-        ]
+        navigationController?.navigationBar.titleTextAttributes = [.foregroundColor: navigationTitleColor]
         navigationController?.navigationBar.tintColor = navigationTitleColor
         switch presenter.mode {
         case .edit:

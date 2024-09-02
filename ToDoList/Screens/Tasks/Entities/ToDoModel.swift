@@ -19,3 +19,16 @@ struct ToDoModel: Hashable, Decodable {
     
     var id: Int
 }
+
+extension ToDoModel {
+    
+    init(from entity: ToDoEntity) {
+        self.init(
+            todo: entity.todoName,
+            description: entity.todoDescription,
+            dateOfCreation: entity.dateOfCreation,
+            completed: entity.isCompleted,
+            id: Int(entity.id)
+        )
+    }
+}

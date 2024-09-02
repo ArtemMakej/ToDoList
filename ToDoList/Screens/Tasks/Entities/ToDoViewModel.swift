@@ -10,7 +10,7 @@ import Foundation
 struct ToDoViewModel {
     var id: Int
     var name: String?
-    var description: String
+    var description: String?
     var created: String?
     var completed: Bool
     

@@ -15,8 +15,9 @@ protocol IConfigurable {
 final class ToDoCell: UICollectionViewCell, IConfigurable {
     
     private let containerView = UIView()
-    private let idLabel = UILabel()
+    private let createdDateLabel = UILabel()
     private let nameLabel = UILabel()
+    private let descriptionLabel = UILabel()
     private let completedSwitch = UISwitch()
     
     private var viewModel: ToDoViewModel?
@@ -39,7 +40,9 @@ final class ToDoCell: UICollectionViewCell, IConfigurable {
         contentView.addSubview(containerView)
         contentView.clipsToBounds = true
         containerView.backgroundColor = UIColor(resource: .colorView)
+        containerView.addSubview(createdDateLabel)
         containerView.addSubview(nameLabel)
+        containerView.addSubview(descriptionLabel)
         containerView.addSubview(completedSwitch)
         contentView.snp.makeConstraints { maker in
             maker.edges.equalToSuperview()
@@ -50,13 +53,31 @@ final class ToDoCell: UICollectionViewCell, IConfigurable {
             maker.left.right.equalToSuperview().inset(16)
         }
         
+        createdDateLabel.textColor = UIColor(resource: .colorSet)
+        createdDateLabel.textAlignment = .right
+        createdDateLabel.font = Font.avenir(weight: .regular, size: 16)
+        createdDateLabel.snp.makeConstraints { maker in
+            maker.top.equalTo(completedSwitch.snp.bottom).offset(5)
+            maker.left.right.equalToSuperview().inset(20)
+            maker.bottom.equalToSuperview().inset(20)
+        }
+        
         nameLabel.textColor =  UIColor(resource: .colorSet)
         nameLabel.font = Font.avenir(weight: .medium, size: 19)
         nameLabel.numberOfLines = .zero
         nameLabel.textAlignment = .center
         nameLabel.snp.makeConstraints { maker in
-            maker.top.equalTo(containerView.snp.top).offset(20)
-            maker.right.left.equalToSuperview().inset(16)
+            maker.top.equalToSuperview().offset(20)
+            maker.right.left.equalTo(createdDateLabel)
+        }
+        
+        descriptionLabel.textColor = UIColor(resource: .colorSet).withAlphaComponent(0.7)
+        descriptionLabel.font = Font.avenir(weight: .medium, size: 17)
+        descriptionLabel.numberOfLines = .zero
+        descriptionLabel.textAlignment = .left
+        descriptionLabel.snp.makeConstraints { maker in
+            maker.top.equalTo(nameLabel.snp.bottom).offset(10)
+            maker.left.right.equalTo(nameLabel)
         }
         
         completedSwitch.backgroundColor = UIColor(resource: .colorSet)
@@ -64,15 +85,16 @@ final class ToDoCell: UICollectionViewCell, IConfigurable {
         completedSwitch.onTintColor = UIColor(resource: .switch)
         completedSwitch.addTarget(self, action: #selector(didTapSwitch), for: .touchUpInside)
         completedSwitch.snp.makeConstraints { maker in
-            maker.top.equalTo(nameLabel.snp.bottom).offset(10)
+            maker.top.equalTo(descriptionLabel.snp.bottom).offset(10)
             maker.centerX.equalTo(nameLabel)
-            maker.bottom.equalToSuperview().inset(20)
         }
     }
     
     func configure(item: ToDoViewModel) {
         viewModel = item
+        createdDateLabel.text = item.created
         nameLabel.text = item.name
+        descriptionLabel.text = item.description
         completedSwitch.isOn = item.completed
         let color = UIColor(resource: .colorView)
         containerView.backgroundColor = item.completed ? color.withAlphaComponent(0.5) : color

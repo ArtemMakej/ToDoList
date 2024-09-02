@@ -113,7 +113,6 @@ final class TasksViewController: UIViewController {
     
     private func makeCollectionViewLayout() -> UICollectionViewLayout {
         UICollectionViewCompositionalLayout { [weak self] sectionIndex, environment in
-            
             let section = NSCollectionLayoutSection.list(using: self!.makeListConfiguration(), layoutEnvironment: environment)
             section.interGroupSpacing = 15
             return section

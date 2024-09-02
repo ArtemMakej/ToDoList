@@ -10,6 +10,7 @@ import Foundation
 protocol ITasksInteractor {
     func loadRemoteTodos()
     func handleNewTask(name: String, description: String?)
+    func handleUpdatedTask(model: ToDoModel)
     func toggleTodo(at id: Int)
     func findModel(index: Int) -> ToDoModel?
     func deleteTask(index: Int)
@@ -29,31 +30,36 @@ final class TasksInteractor: ITasksInteractor {
     private let userDefaults: IUserDefaults
     private let tasksStorageService: ITasksStorageService
     private let dateFormatter: DateFormatter
+    private let notificationCenter = NotificationCenter.default
     
     // State
     private var maxId: Int = 0
     private var todoModels: [ToDoModel] = []
     
     deinit {
-        tasksStorageService.save(tasks: todoModels)
+        notificationCenter.removeObserver(self)
     }
     
     init(
         remoteTodosService: IRemoteTodosService,
         userDefaults: IUserDefaults,
         tasksStorageService: ITasksStorageService,
-        dateFormatter: DateFormatter
+        dateFormatter: DateFormatter,
+        willTerminateNotificationName: NSNotification.Name,
+        willEnterBackgroundNotificationName: NSNotification.Name
     ) {
         self.userDefaults = userDefaults
         self.remoteTodosService = remoteTodosService
         self.tasksStorageService = tasksStorageService
         self.dateFormatter = dateFormatter
+        startObservingAppNotifications(names: [willTerminateNotificationName, willEnterBackgroundNotificationName])
     }
     
     func loadRemoteTodos() {
         tasksStorageService.loadModels { [weak self] loadedModels in
             guard let self else { return }
-            let hasFetchedTodos = false // userDefaults.bool(forKey: Self.hasFetchedTodosKey)
+            let loadedModels = sort(todoModels: loadedModels)
+            let hasFetchedTodos = userDefaults.bool(forKey: Self.hasFetchedTodosKey)
             let id = loadedModels.map { $0.id }.max() ?? .zero
             maxId = id
             
@@ -78,14 +84,25 @@ final class TasksInteractor: ITasksInteractor {
             id: maxId
         )
         todoModels = sort(todoModels: todoModels + [model])
+        tasksStorageService.save(tasks: todoModels)
         output?.didFetchTodos(models: todoModels)
     }
     
+    func handleUpdatedTask(model: ToDoModel) {
+        let foundModelIndex: Int? = todoModels.firstIndex(where: { $0.id == model.id })
+        guard let foundModelIndex else { return }
+        tasksStorageService.updateTodo(at: todoModels[foundModelIndex].id, with: model)
+        todoModels[foundModelIndex] = model
+        todoModels = sort(todoModels: todoModels)
+        output?.didUpdateTodos(models: todoModels)
+    }
+    
     func toggleTodo(at id: Int) {
-        let foundModelIndex: Int? = todoModels.firstIndex(where: { $0.id == id})
+        let foundModelIndex: Int? = todoModels.firstIndex(where: { $0.id == id })
         guard let foundModelIndex else { return }
         todoModels[foundModelIndex].completed = !todoModels[foundModelIndex].completed
         todoModels = sort(todoModels: todoModels)
+        tasksStorageService.save(tasks: todoModels)
         output?.didUpdateTodos(models: todoModels)
     }
     
@@ -95,7 +112,8 @@ final class TasksInteractor: ITasksInteractor {
     }
     
     func deleteTask(index: Int) {
-        todoModels.remove(at: index)
+        let deletedTask = todoModels.remove(at: index)
+        tasksStorageService.deleteTodo(at: deletedTask.id)
         output?.didUpdateTodos(models: todoModels)
     }
     
@@ -108,12 +126,12 @@ final class TasksInteractor: ITasksInteractor {
                 let maxId = composedModels.map { $0.id }.max()
                 self.maxId = maxId ?? .zero
                 self.todoModels = sort(todoModels: composedModels)
-                
-                //                userDefaults.set(
-                //                    value: true,
-                //                    forKey: Self.hasFetchedTodosKey)
+                userDefaults.set(value: true, forKey: Self.hasFetchedTodosKey)
+                tasksStorageService.save(tasks: composedModels)
+                tasksStorageService.saveToDisk()
                 output?.didFetchTodos(models: todoModels)
             case let .failure(error):
+                assertionFailure(error.localizedDescription)
                 self.todoModels = loadedModels
                 output?.didFetchTodos(models: loadedModels)
             }
@@ -123,9 +141,24 @@ final class TasksInteractor: ITasksInteractor {
     private func sort(todoModels: [ToDoModel]) -> [ToDoModel] {
         todoModels.sorted {
             if $0.completed == $1.completed {
-                return $0.id < $1.id
+                return $0.id > $1.id
             }
             return !$0.completed && $1.completed
         }
+    }
+    
+    private func startObservingAppNotifications(names: [Notification.Name]) {
+        names.forEach { name in
+            notificationCenter.addObserver(
+                self,
+                selector: #selector(handleNotification),
+                name: name,
+                object: nil
+            )
+        }
+    }
+    
+    @objc private func handleNotification() {
+        tasksStorageService.saveToDisk()
     }
 }
