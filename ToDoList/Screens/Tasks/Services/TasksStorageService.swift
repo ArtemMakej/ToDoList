@@ -9,7 +9,7 @@ import Foundation
 
 protocol ITasksStorageService {
     func loadModels(completion: @escaping (([ToDoModel]) -> Void))
-    func save(tasks: [ToDoModel])
+    func save(tasks: [ToDoModel], completion: @escaping () -> Void)
     func deleteTodo(at id: Int)
     func updateTodo(at id: Int, with: ToDoModel)
     
@@ -27,7 +27,7 @@ final class TasksStorageService: ITasksStorageService {
         self.coreDataStorage = storageService
     }
     
-    func save(tasks: [ToDoModel]) {
+    func save(tasks: [ToDoModel], completion: @escaping () -> Void) {
         privateQueue.async { [weak self] in
             guard let self else { return }
             let existingTodoEntities = fetchTodos()
@@ -44,6 +44,7 @@ final class TasksStorageService: ITasksStorageService {
             // Create new tasks
             let newItems = newSet.subtracting(existingSet)
             createNewTodos(tasks: Array(newItems))
+            completion()
         }
     }
     

@@ -84,8 +84,10 @@ final class TasksInteractor: ITasksInteractor {
             id: maxId
         )
         todoModels = sort(todoModels: todoModels + [model])
-        tasksStorageService.save(tasks: todoModels)
-        output?.didFetchTodos(models: todoModels)
+        tasksStorageService.save(tasks: todoModels) { [weak self] in
+            guard let self else { return }
+            output?.didFetchTodos(models: todoModels)
+        }
     }
     
     func handleUpdatedTask(model: ToDoModel) {
@@ -102,8 +104,10 @@ final class TasksInteractor: ITasksInteractor {
         guard let foundModelIndex else { return }
         todoModels[foundModelIndex].completed = !todoModels[foundModelIndex].completed
         todoModels = sort(todoModels: todoModels)
-        tasksStorageService.save(tasks: todoModels)
-        output?.didUpdateTodos(models: todoModels)
+        tasksStorageService.save(tasks: todoModels) { [weak self] in
+            guard let self else { return }
+            output?.didUpdateTodos(models: todoModels)
+        }
     }
     
     func findModel(index: Int) -> ToDoModel? {
@@ -127,9 +131,11 @@ final class TasksInteractor: ITasksInteractor {
                 self.maxId = maxId ?? .zero
                 self.todoModels = sort(todoModels: composedModels)
                 userDefaults.set(value: true, forKey: Self.hasFetchedTodosKey)
-                tasksStorageService.save(tasks: composedModels)
-                tasksStorageService.saveToDisk()
-                output?.didFetchTodos(models: todoModels)
+                tasksStorageService.save(tasks: composedModels) { [weak self] in
+                    guard let self else { return }
+                    tasksStorageService.saveToDisk()
+                    output?.didFetchTodos(models: todoModels)
+                }
             case let .failure(error):
                 assertionFailure(error.localizedDescription)
                 self.todoModels = loadedModels

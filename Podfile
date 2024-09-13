@@ -7,15 +7,4 @@ target 'ToDoList' do
 
 pod 'SnapKit', '~> 5.6.0'
 
-  # Pods for ToDoList
-
-  target 'ToDoListTests' do
-    inherit! :search_paths
-    # Pods for testing
-  end
-
-  target 'ToDoListUITests' do
-    # Pods for testing
-  end
-
 end
